@@ -126,31 +126,37 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function calculateStrength(password) {
-  // Improved entropy-based strength calculation
-  if (!password) return { score: 0, feedback: "Generate a password" };
-  let charsetSize = 0;
-  let feedback = [];
-  if (/[a-z]/.test(password)) charsetSize += 26;
-  else feedback.push("Add lowercase letters");
-  if (/[A-Z]/.test(password)) charsetSize += 26;
-  else feedback.push("Add uppercase letters");
-  if (/[0-9]/.test(password)) charsetSize += 10;
-  else feedback.push("Add numbers");
-  if (/[^A-Za-z0-9]/.test(password)) charsetSize += 32;
-  else feedback.push("Add symbols");
-  const length = password.length;
-  // Entropy formula: log2(charset^length) = length * log2(charset)
-  let entropy = charsetSize > 0 ? length * Math.log2(charsetSize) : 0;
-  // Feedback for short passwords
-  if (length < 8) feedback.unshift("Too short");
-  // Score mapping: 0-30 weak, 31-60 fair, 61-80 good, 81+ strong
-  let score = Math.min(100, Math.round((entropy / 80) * 100));
-  if (score > 100) score = 100;
-  return { score, feedback: feedback.length ? feedback.join(", ") : undefined };
+    // Improved entropy-based strength calculation
+    if (!password) return { score: 0, feedback: "Generate a password" };
+    let charsetSize = 0;
+    let feedback = [];
+    if (/[a-z]/.test(password)) charsetSize += 26;
+    else feedback.push("Add lowercase letters");
+    if (/[A-Z]/.test(password)) charsetSize += 26;
+    else feedback.push("Add uppercase letters");
+    if (/[0-9]/.test(password)) charsetSize += 10;
+    else feedback.push("Add numbers");
+    if (/[^A-Za-z0-9]/.test(password)) charsetSize += 32;
+    else feedback.push("Add symbols");
+    const length = password.length;
+    // Entropy formula: log2(charset^length) = length * log2(charset)
+    let entropy = charsetSize > 0 ? length * Math.log2(charsetSize) : 0;
+    // Feedback for short passwords
+    if (length < 8) feedback.unshift("Too short");
+    // Score mapping: 0-30 weak, 31-60 fair, 61-80 good, 81+ strong
+    let score = Math.min(100, Math.round((entropy / 80) * 100));
+    if (score > 100) score = 100;
+    return {
+      score,
+      feedback: feedback.length ? feedback.join(", ") : undefined,
+    };
   }
 
   function updateStrengthMeter(strength) {
-    const { score, feedback } = typeof strength === 'object' ? strength : { score: strength, feedback: undefined };
+    const { score, feedback } =
+      typeof strength === "object"
+        ? strength
+        : { score: strength, feedback: undefined };
     strengthIndicator.style.width = score + "%";
     let strengthLabel = "";
     let color = "";
