@@ -90,8 +90,8 @@ A sophisticated bookmark manager with tag-based organization, smart search, and 
 1. **Clone Repository**
 
    ```bash
-   git clone https://github.com/AnwarHossainSR/chrome-extensions-collection.git
-   cd chrome-extensions-collection
+   git clone https://github.com/AnwarHossainSR/chrome-productivity-extensions.git
+   cd chrome-productivity-extensions
    ```
 
 2. **Choose Extension**
@@ -256,7 +256,7 @@ Have an idea? [Request a feature](https://github.com/AnwarHossainSR/chrome-exten
 
 ### Get Help
 
-- 📧 **Email Support**: support@chrome-extensions-collection.com
+- 📧 **Email Support**: support@chrome-productivity-extensions.com
 - 🐛 **Bug Reports**: [GitHub Issues](https://github.com/AnwarHossainSR/chrome-extensions-collection/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/AnwarHossainSR/chrome-extensions-collection/discussions)
 - 📖 **Documentation**: [Wiki](https://github.com/AnwarHossainSR/chrome-extensions-collection/wiki)
