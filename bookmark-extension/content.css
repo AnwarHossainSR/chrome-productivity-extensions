@@ -1,0 +1,780 @@
+/* Smart Bookmarks - Complete CSS Redesign */
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Popup Styles */
+body {
+  width: 420px;
+  min-height: 580px;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  background: linear-gradient(145deg, #4a5568 0%, #2d3748 50%, #1a202c 100%);
+  color: #f7fafc;
+  position: relative;
+  overflow: hidden;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
+  z-index: 0;
+}
+
+/* Header Section */
+.header {
+  position: relative;
+  z-index: 1;
+  padding: 32px 24px 24px 24px;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header p {
+  font-size: 14px;
+  color: #cbd5e0;
+  font-weight: 500;
+}
+
+/* Container */
+.container {
+  position: relative;
+  z-index: 1;
+  padding: 0 20px 24px 20px;
+}
+
+/* Tab Navigation */
+.tabs {
+  display: flex;
+  margin-bottom: 24px;
+  background: rgba(45, 55, 72, 0.8);
+  border-radius: 16px;
+  padding: 6px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.tab {
+  flex: 1;
+  padding: 14px 16px;
+  text-align: center;
+  border: none;
+  background: none;
+  color: #a0aec0;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.tab.active {
+  background: linear-gradient(135deg, #38b2ac, #319795);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(56, 178, 172, 0.4);
+  transform: translateY(-1px);
+}
+
+.tab:not(.active):hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Save Section */
+.save-section {
+  background: linear-gradient(
+    145deg,
+    rgba(45, 55, 72, 0.9),
+    rgba(26, 32, 44, 0.9)
+  );
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.save-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #38b2ac, #319795, #2c7a7b);
+}
+
+/* Current Page Info */
+.current-page {
+  font-size: 13px;
+  color: #a0aec0;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 12px;
+  border-left: 3px solid #38b2ac;
+}
+
+/* Input Fields */
+.tag-input-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+.search-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f7fafc;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+.search-input:focus {
+  outline: none;
+  border-color: #38b2ac;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 4px rgba(56, 178, 172, 0.2);
+}
+
+input[type="text"]::placeholder,
+.search-input::placeholder {
+  color: #718096;
+}
+
+/* Tag Suggestions */
+.tag-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #2d3748;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  max-height: 140px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 4px;
+}
+
+.tag-suggestion {
+  padding: 12px 16px;
+  cursor: pointer;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.2s ease;
+}
+
+.tag-suggestion:hover {
+  background: rgba(56, 178, 172, 0.2);
+}
+
+.tag-suggestion:last-child {
+  border-bottom: none;
+}
+
+/* Quick Tags */
+.quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.quick-tag {
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.quick-tag:hover {
+  background: linear-gradient(135deg, #38b2ac, #319795);
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 178, 172, 0.3);
+}
+
+/* Save Button */
+.save-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(56, 178, 172, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(56, 178, 172, 0.4);
+  background: linear-gradient(135deg, #319795 0%, #2c7a7b 100%);
+}
+
+.save-btn:disabled {
+  background: #4a5568;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Search Section */
+.search-section {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  margin-bottom: 16px;
+}
+
+/* Filter Tags */
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-tag {
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  color: #cbd5e0;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-tag.active {
+  background: linear-gradient(135deg, #38b2ac, #319795);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 4px 12px rgba(56, 178, 172, 0.3);
+}
+
+.filter-tag:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Bookmarks List */
+.bookmarks-list {
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.bookmarks-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.bookmarks-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.bookmarks-list::-webkit-scrollbar-thumb {
+  background: #38b2ac;
+  border-radius: 3px;
+}
+
+/* Bookmark Items */
+.bookmark-item {
+  background: linear-gradient(
+    145deg,
+    rgba(45, 55, 72, 0.8),
+    rgba(26, 32, 44, 0.8)
+  );
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.bookmark-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #38b2ac, #319795);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.bookmark-item:hover::before {
+  transform: scaleX(1);
+}
+
+.bookmark-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(
+    145deg,
+    rgba(56, 178, 172, 0.1),
+    rgba(45, 55, 72, 0.9)
+  );
+}
+
+.bookmark-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #f7fafc;
+}
+
+.bookmark-url {
+  font-size: 12px;
+  color: #a0aec0;
+  margin-bottom: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookmark-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.bookmark-tag {
+  padding: 4px 10px;
+  background: rgba(56, 178, 172, 0.2);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #38b2ac;
+  border: 1px solid rgba(56, 178, 172, 0.3);
+}
+
+.bookmark-date {
+  font-size: 10px;
+  color: #718096;
+  font-weight: 500;
+}
+
+/* Export Button */
+.export-btn {
+  width: 100%;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.export-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: #a0aec0;
+}
+
+.empty-state p {
+  font-size: 14px;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.empty-state p:first-child {
+  font-size: 16px;
+  font-weight: 600;
+  color: #cbd5e0;
+}
+
+/* Content Script Dialog Styles */
+.smart-bookmarks-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(26, 32, 44, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  animation: smart-bookmarks-fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes smart-bookmarks-fadeIn {
+  from {
+    opacity: 0;
+    background: rgba(26, 32, 44, 0);
+  }
+  to {
+    opacity: 1;
+    background: rgba(26, 32, 44, 0.85);
+  }
+}
+
+.smart-bookmarks-dialog-content {
+  background: linear-gradient(145deg, #2d3748 0%, #1a202c 100%);
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  width: 90%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: smart-bookmarks-slideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.smart-bookmarks-dialog-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #38b2ac 0%, #319795 50%, #2c7a7b 100%);
+}
+
+@keyframes smart-bookmarks-slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.smart-bookmarks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 32px 24px 32px;
+  background: rgba(56, 178, 172, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.smart-bookmarks-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 32px;
+  right: 32px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #38b2ac, transparent);
+}
+
+.smart-bookmarks-header h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #38b2ac, #319795);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.smart-bookmarks-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #cbd5e0;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.smart-bookmarks-close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f56565;
+  transform: scale(1.1);
+}
+
+.smart-bookmarks-page-info {
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.smart-bookmarks-title {
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #f7fafc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+}
+
+.smart-bookmarks-url {
+  color: #a0aec0;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  background: rgba(56, 178, 172, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border-left: 3px solid #38b2ac;
+}
+
+.smart-bookmarks-form {
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+#smart-bookmarks-tags {
+  width: 100%;
+  padding: 18px 24px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  font-size: 16px;
+  font-family: inherit;
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f7fafc;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+#smart-bookmarks-tags:focus {
+  outline: none;
+  border-color: #38b2ac;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 4px rgba(56, 178, 172, 0.2);
+  transform: translateY(-2px);
+}
+
+#smart-bookmarks-tags::placeholder {
+  color: #718096;
+}
+
+.smart-bookmarks-quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.smart-bookmarks-quick-tags button {
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  backdrop-filter: blur(10px);
+}
+
+.smart-bookmarks-quick-tags button:hover {
+  background: linear-gradient(135deg, #38b2ac, #319795);
+  border-color: transparent;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(56, 178, 172, 0.3);
+}
+
+.smart-bookmarks-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.smart-bookmarks-actions button {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  min-width: 100px;
+}
+
+#smart-bookmarks-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: #a0aec0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+#smart-bookmarks-cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+#smart-bookmarks-save {
+  background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
+  color: white;
+  box-shadow: 0 8px 24px rgba(56, 178, 172, 0.3);
+}
+
+#smart-bookmarks-save:hover {
+  background: linear-gradient(135deg, #319795 0%, #2c7a7b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(56, 178, 172, 0.4);
+}
+
+.smart-bookmarks-success {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  background: linear-gradient(135deg, #38b2ac, #319795);
+  color: white;
+  padding: 20px 32px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 16px 40px rgba(56, 178, 172, 0.4);
+  z-index: 999999;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 200px;
+  text-align: center;
+}
+
+.smart-bookmarks-success.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.smart-bookmarks-success::before {
+  content: "✓";
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Additional Dialog Effects */
+.smart-bookmarks-dialog::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(56, 178, 172, 0.05),
+    transparent 70%
+  );
+  animation: smart-bookmarks-pulse 3s ease-in-out infinite;
+}
+
+@keyframes smart-bookmarks-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.1;
+  }
+}
+
+/* Tab Content Display */
+.tab-content {
+  display: block;
+}
+
+.tab-content[style*="display: none"] {
+  display: none !important;
+}
