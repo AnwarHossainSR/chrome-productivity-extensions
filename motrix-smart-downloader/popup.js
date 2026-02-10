@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // load last directory from storage or use an example
   chrome.storage.local.get(["lastDir"], (res) => {
-    dirInput.value = res && res.lastDir ? res.lastDir : "D:/Movies/2025";
+    dirInput.value = res && res.lastDir ? res.lastDir : "D:\\movie & series";
   });
 
   // try to auto-detect the active tab URL
