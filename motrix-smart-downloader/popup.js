@@ -30,65 +30,60 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   sendBtn.addEventListener("click", async () => {
-    const url = urlInput.value.trim();
-    if (!url) {
+    const rawUrl = (urlInput.value || "").trim();
+    if (!rawUrl) {
       setStatus("Please enter a download URL", "error");
       return;
     }
-    const out =
-      filenameInput.value && filenameInput.value.trim()
-        ? filenameInput.value.trim()
-        : guessFilenameFromUrl(url);
-    const dir =
-      dirInput.value && dirInput.value.trim()
-        ? dirInput.value.trim()
-        : "D:/Movies/2025";
+
+    const url = rawUrl;
+    let out = (filenameInput.value || "").trim() || guessFilenameFromUrl(url);
+    out = sanitizeFilename(out);
+    let dir = (dirInput.value || "").trim() || "D:/Movies/2025";
+    dir = sanitizeDir(dir);
+
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      setStatus("Please use a valid http/https URL", "error");
+      return;
+    }
 
     sendBtn.disabled = true;
     spinner.classList.remove("hidden");
     setStatus("Sending to Motrix...", "");
 
-    const body = {
-      jsonrpc: "2.0",
-      id: "ext-" + Date.now(),
-      method: "aria2.addUri",
-      params: [[url], { out, dir }],
-    };
-
     try {
-      const resp = await fetch("http://localhost:16800/jsonrpc", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+      const result = await new Promise((resolve) => {
+        chrome.runtime.sendMessage(
+          { action: "addUri", payload: { url, out, dir } },
+          (resp) => resolve(resp),
+        );
       });
 
-      if (!resp.ok) throw new Error("Network response was not ok");
-      const data = await resp.json();
-      if (data.error) {
-        setStatus(
-          "RPC Error: " + (data.error.message || JSON.stringify(data.error)),
-          "error",
-        );
-      } else {
+      if (!result) throw new Error("No response from background worker");
+      if (result.success) {
+        const data = result.data;
         setStatus("Added ✓ GID: " + (data.result || ""), "success");
         status.classList.add("pulse");
         setTimeout(() => status.classList.remove("pulse"), 900);
         chrome.storage.local.set({ lastDir: dir });
+      } else {
+        const err = result.error || "Unknown error";
+        if (
+          err.toLowerCase().includes("network") ||
+          err.toLowerCase().includes("fetch") ||
+          err.toLowerCase().includes("refused")
+        ) {
+          setStatus(
+            "Cannot connect to Motrix at http://localhost:16800 — is it running?",
+            "error",
+          );
+        } else {
+          setStatus("Error: " + err, "error");
+        }
       }
     } catch (err) {
       const msg = err && err.message ? err.message : String(err);
-      if (
-        msg.includes("Failed to fetch") ||
-        msg.includes("Network") ||
-        msg.includes("refused")
-      ) {
-        setStatus(
-          "Cannot connect to Motrix at http://localhost:16800 — is it running?",
-          "error",
-        );
-      } else {
-        setStatus("Error: " + msg, "error");
-      }
+      setStatus("Error: " + msg, "error");
     } finally {
       sendBtn.disabled = false;
       spinner.classList.add("hidden");
@@ -108,5 +103,19 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) {
       return "download";
     }
+  }
+
+  // sanitize filename for Windows: remove <>:"/\\|?* and control chars
+  function sanitizeFilename(name) {
+    name = name.replace(/[:<>"\\/|?*\x00-\x1F]/g, "").trim();
+    name = name.replace(/[\.\s]+$/, "") || "download";
+    if (name.length > 200) name = name.slice(0, 200);
+    return name;
+  }
+
+  function sanitizeDir(d) {
+    let out = d.trim();
+    out = out.replace(/\\+/g, "\\");
+    return out;
   }
 });
