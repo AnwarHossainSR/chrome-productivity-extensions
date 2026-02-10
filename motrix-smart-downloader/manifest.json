@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Motrix Smart Downloader",
+  "version": "1.0.0",
+  "description": "Send download links to Motrix (Aria2 RPC) from a clean popup UI.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Motrix Smart Downloader"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["activeTab", "storage"],
+  "icons": {
+    "16": "icons/icon16.svg",
+    "48": "icons/icon48.svg",
+    "128": "icons/icon128.svg"
+  }
+}
