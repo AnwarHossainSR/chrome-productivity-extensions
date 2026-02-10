@@ -47,6 +47,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Heuristic: if URL looks like a webpage (no file extension or html-like), warn the user
+    if (isLikelyWebpage(url)) {
+      const ok = confirm(
+        "The URL looks like a web page rather than a direct file link. Are you sure you want to send it to Motrix?",
+      );
+      if (!ok) {
+        setStatus(
+          "Cancelled — use a direct download link (right-click → Copy link)",
+          "error",
+        );
+        return;
+      }
+    }
+
     sendBtn.disabled = true;
     spinner.classList.remove("hidden");
     setStatus("Sending to Motrix...", "");
@@ -117,5 +131,35 @@ document.addEventListener("DOMContentLoaded", () => {
     let out = d.trim();
     out = out.replace(/\\+/g, "\\");
     return out;
+  }
+
+  function isLikelyWebpage(u) {
+    try {
+      const urlObj = new URL(u);
+      const path = urlObj.pathname || "";
+      // trailing slash -> likely page
+      if (path.endsWith("/")) return true;
+      const last = path.split("/").filter(Boolean).pop() || "";
+      if (!last) return true;
+      const parts = last.split(".");
+      if (parts.length === 1) return true; // no extension
+      const ext = parts.pop().toLowerCase();
+      const htmlExts = [
+        "html",
+        "htm",
+        "php",
+        "asp",
+        "aspx",
+        "jsp",
+        "cgi",
+        "pl",
+        "cfm",
+      ];
+      if (htmlExts.includes(ext)) return true;
+      if (ext.length > 6) return true; // weird long ext -> probably not a file
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 });
