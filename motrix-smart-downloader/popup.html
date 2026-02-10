@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Motrix Smart Downloader</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="popup">
+      <div class="card">
+        <h1 class="title">Motrix Smart Downloader</h1>
+        <div class="field">
+          <label for="url">Download URL</label>
+          <input
+            id="url"
+            type="text"
+            placeholder="https://example.com/file.mp4"
+          />
+        </div>
+        <div class="row">
+          <div class="field small">
+            <label for="filename">File name</label>
+            <input id="filename" type="text" placeholder="file.mp4" />
+          </div>
+          <div class="field small">
+            <label for="dir">Download dir</label>
+            <input id="dir" type="text" placeholder="D:/Movies/2025" />
+          </div>
+        </div>
+        <div class="actions">
+          <button id="sendBtn" class="primary">
+            Send to Motrix <span id="spinner" class="spinner hidden"></span>
+          </button>
+        </div>
+        <div id="status" class="status">Ready</div>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
