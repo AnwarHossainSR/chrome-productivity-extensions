@@ -5,15 +5,20 @@
   "description": "Send download links to Motrix (Aria2 RPC) from a clean popup UI.",
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Motrix Smart Downloader"
+    "default_title": "Motrix Smart Downloader",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
   "background": {
     "service_worker": "background.js"
   },
   "permissions": ["activeTab", "storage", "contextMenus", "notifications"],
   "icons": {
-    "16": "icons/icon16.svg",
-    "48": "icons/icon48.svg",
-    "128": "icons/icon128.svg"
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }
