@@ -1,6 +1,16 @@
 // background.js — performs JSON-RPC requests to Motrix (aria2 RPC)
 // Listens for messages from popup and retries on transient failures.
 
+// Helper: try to open Motrix app
+async function ensureMotrixRunning() {
+  try {
+    await chrome.tabs.create({ url: "motrix://", active: false });
+    await new Promise(r => setTimeout(r, 1500));
+    const tabs = await chrome.tabs.query({ url: "motrix://*" });
+    if (tabs.length) await chrome.tabs.remove(tabs.map(t => t.id));
+  } catch (e) {}
+}
+
 // Helper: send JSON-RPC to Motrix (aria2)
 async function sendToMotrix(url, out, dir) {
   const body = {
@@ -29,8 +39,9 @@ async function sendToMotrix(url, out, dir) {
       return { success: true, data };
     } catch (err) {
       lastError = err;
+      if (attempt === 0) await ensureMotrixRunning();
       if (attempt === maxRetries) break;
-      await new Promise((r) => setTimeout(r, 350 * (attempt + 1)));
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
       attempt++;
     }
   }
