@@ -6,27 +6,114 @@ document.addEventListener("DOMContentLoaded", () => {
   const spinner = document.getElementById("spinner");
   const status = document.getElementById("status");
 
+  // true when this popup was opened from the context menu (has URL params)
+  const params = new URLSearchParams(window.location.search);
+  const paramUrl = params.get("url");
+  const paramFilename = params.get("filename");
+  const openedFromContextMenu = !!paramUrl;
+
   function setStatus(text, type) {
     status.textContent = text;
     status.className = "status" + (type ? " " + type : "");
   }
 
-  // load last directory from storage or use an example
-  chrome.storage.local.get(["lastDir"], (res) => {
+  // load last directory and recent dirs from storage
+  chrome.storage.local.get(["lastDir", "recentDirs"], (res) => {
     dirInput.value = res && res.lastDir ? res.lastDir : "D:\\movie & series";
+
+    // populate datalist with recent dirs
+    const datalist = document.getElementById("dirSuggestions");
+    if (datalist) {
+      const recentDirs = Array.isArray(res.recentDirs) ? res.recentDirs : [];
+      recentDirs.forEach((d) => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        datalist.appendChild(opt);
+      });
+    }
+
+    // if opened from context menu, pre-fill URL & filename then focus dir
+    if (openedFromContextMenu) {
+      urlInput.value = paramUrl;
+      filenameInput.value = paramFilename || guessFilenameFromUrl(paramUrl);
+      // highlight the dir field so user can change it immediately
+      dirInput.focus();
+      dirInput.select();
+    }
   });
 
-  // try to auto-detect the active tab URL
-  try {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tab = tabs && tabs[0];
-      if (tab && tab.url) {
-        urlInput.value = tab.url;
-        filenameInput.value = guessFilenameFromUrl(tab.url);
-      }
+  // try to auto-detect the active tab URL (only when NOT opened from context menu)
+  if (!openedFromContextMenu) {
+    try {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs && tabs[0];
+        if (tab && tab.url) {
+          urlInput.value = tab.url;
+          filenameInput.value = guessFilenameFromUrl(tab.url);
+        }
+      });
+    } catch (e) {
+      // ignore if permissions not available
+    }
+  }
+
+  // Browse button — opens native OS Save dialog; we extract the directory from the chosen path
+  const browseBtn = document.getElementById("browseBtn");
+  if (browseBtn) {
+    browseBtn.addEventListener("click", () => {
+      browseBtn.disabled = true;
+      setStatus("Opening folder browser…", "");
+
+      chrome.downloads.download(
+        {
+          url: "data:text/plain,",
+          filename: "select_folder_here.tmp",
+          saveAs: true,
+        },
+        (downloadId) => {
+          if (chrome.runtime.lastError || downloadId == null) {
+            browseBtn.disabled = false;
+            setStatus("Could not open folder browser", "error");
+            return;
+          }
+
+          let resolvedDir = null;
+
+          const onChanged = (delta) => {
+            if (delta.id !== downloadId) return;
+
+            // Capture the path as soon as Chrome sets it (user clicked Save)
+            if (delta.filename && delta.filename.current) {
+              const fullPath = delta.filename.current;
+              // Strip the filename to get just the directory
+              resolvedDir = fullPath
+                .replace(/[^\\/]*$/, "")
+                .replace(/[\\/]+$/, "");
+              if (resolvedDir) {
+                dirInput.value = resolvedDir;
+                setStatus("Folder selected", "success");
+              }
+            }
+
+            // Once the (tiny) download finishes or is interrupted, clean up
+            if (
+              delta.state &&
+              (delta.state.current === "complete" ||
+                delta.state.current === "interrupted")
+            ) {
+              chrome.downloads.onChanged.removeListener(onChanged);
+              browseBtn.disabled = false;
+              if (!resolvedDir) setStatus("Ready", "");
+              chrome.downloads.removeFile(downloadId, () => {
+                chrome.downloads.erase({ id: downloadId });
+              });
+            }
+          };
+
+          chrome.downloads.onChanged.addListener(onChanged);
+        },
+      );
     });
-  } catch (e) {
-    // ignore if permissions not available
   }
 
   sendBtn.addEventListener("click", async () => {
@@ -78,8 +165,23 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = result.data;
         setStatus("Added ✓ GID: " + (data.result || ""), "success");
         status.classList.add("pulse");
-        setTimeout(() => status.classList.remove("pulse"), 900);
-        chrome.storage.local.set({ lastDir: dir });
+
+        // persist dir to recent dirs list (keep last 10, newest first)
+        chrome.storage.local.get(["recentDirs"], (res) => {
+          let recentDirs = Array.isArray(res.recentDirs) ? res.recentDirs : [];
+          recentDirs = [dir, ...recentDirs.filter((d) => d !== dir)].slice(
+            0,
+            10,
+          );
+          chrome.storage.local.set({ lastDir: dir, recentDirs });
+        });
+
+        // auto-close the window after a short delay when opened from context menu
+        if (openedFromContextMenu) {
+          setTimeout(() => window.close(), 1200);
+        } else {
+          setTimeout(() => status.classList.remove("pulse"), 900);
+        }
       } else {
         const err = result.error || "Unknown error";
         if (

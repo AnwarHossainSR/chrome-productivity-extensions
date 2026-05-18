@@ -5,9 +5,9 @@
 async function ensureMotrixRunning() {
   try {
     await chrome.tabs.create({ url: "motrix://", active: false });
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 1500));
     const tabs = await chrome.tabs.query({ url: "motrix://*" });
-    if (tabs.length) await chrome.tabs.remove(tabs.map(t => t.id));
+    if (tabs.length) await chrome.tabs.remove(tabs.map((t) => t.id));
   } catch (e) {}
 }
 
@@ -99,20 +99,19 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
   })();
 
-  const res = await sendToMotrix(link, filename || undefined, undefined);
-  if (res.success) {
-    chrome.notifications.create({
-      type: "basic",
-      iconUrl: "icons/icon48.svg",
-      title: "Motrix — Added",
-      message: `Task added (GID: ${res.data.result || ""})`,
-    });
-  } else {
-    chrome.notifications.create({
-      type: "basic",
-      iconUrl: "icons/icon48.svg",
-      title: "Motrix — Error",
-      message: res.error || "Failed to send link",
-    });
-  }
+  // Open a popup window so the user can confirm / change the destination dir
+  const popupUrl =
+    chrome.runtime.getURL("popup.html") +
+    "?url=" +
+    encodeURIComponent(link) +
+    "&filename=" +
+    encodeURIComponent(filename || "");
+
+  chrome.windows.create({
+    url: popupUrl,
+    type: "popup",
+    width: 420,
+    height: 330,
+    focused: true,
+  });
 });
