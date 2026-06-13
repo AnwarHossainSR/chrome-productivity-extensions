@@ -101,6 +101,41 @@ button.primary:disabled {
 button.primary:hover:not(:disabled) {
   transform: translateY(-1px);
 }
+.dir-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.dir-row input {
+  flex: 1;
+  min-width: 0;
+}
+.browse-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background 150ms,
+    color 150ms,
+    border-color 150ms;
+}
+.browse-btn:hover:not(:disabled) {
+  background: rgba(110, 231, 183, 0.1);
+  border-color: rgba(110, 231, 183, 0.2);
+  color: var(--accent);
+}
+.browse-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 .spinner {
   display: inline-block;
   width: 14px;
